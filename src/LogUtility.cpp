@@ -101,9 +101,21 @@ String LogUtility::getCurrentTime() {
 }
 
 String LogUtility::getLogs() {
-    String allLogs = "";
+    // Estimate total size of all logs
+    size_t totalSize = 0;
+    for (int i = logDeque.size() - 1; i >= 0; i--) {
+        totalSize += logDeque[i].length();
+    }
+
+    // Reserve the necessary space in one go
+    String allLogs;
+    allLogs.reserve(totalSize); // Preallocate memory
+
+    // Append all log entries in the deque
     for (int i = logDeque.size() - 1; i >= 0; i--) {
         allLogs += logDeque[i];
     }
-    return allLogs; // Return all logs as a single string
+
+    return allLogs;
 }
+
