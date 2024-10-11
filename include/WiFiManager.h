@@ -6,14 +6,14 @@
 
 class WiFiManager {
 public:
-    WiFiManager(LogUtility& logUtility, const char* ssid, const char* password);
+    WiFiManager(LogUtility& logUtility);
     void connect();
     void handle();
     
 private:
     LogUtility& logUtility;
-    const char* ssid;
-    const char* password;
+    unsigned long previousMillis;
+    boolean isDisconnected;
 };
 
 #endif

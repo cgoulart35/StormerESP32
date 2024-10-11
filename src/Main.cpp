@@ -4,11 +4,8 @@
 #include "WiFiManager.h"
 #include "OTAUpdater.h"
 
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
-
 LogUtility logUtility;
-WiFiManager wifiManager(logUtility, ssid, password);
+WiFiManager wifiManager(logUtility);
 OTAUpdater otaUpdater(logUtility);
 
 void heartbeat();
@@ -22,7 +19,7 @@ void setup() {
     wifiManager.connect();
 
     // Start log server
-    logUtility.startLogServer();
+    logUtility.setup();
 
     // Setup OTA
     otaUpdater.setupOTA();
@@ -43,10 +40,10 @@ void loop() {
 }
 
 void heartbeat() {
-    unsigned long currentTime = millis();  // Get the time in milliseconds since the program started
-    unsigned long seconds = currentTime / 1000;  // Convert milliseconds to seconds
-    unsigned long minutes = seconds / 60;  // Convert seconds to minutes
-    unsigned long hours = minutes / 60;  // Convert minutes to hours
+    unsigned long currentTime = millis();       // Get the time in milliseconds since the program started
+    unsigned long seconds = currentTime / 1000; // Convert milliseconds to seconds
+    unsigned long minutes = seconds / 60;       // Convert seconds to minutes
+    unsigned long hours = minutes / 60;         // Convert minutes to hours
 
     // Print the heartbeat message
     logUtility.log("Heartbeat (loop running) | Uptime: ");

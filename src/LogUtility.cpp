@@ -2,53 +2,59 @@
 #include <time.h>
 
 LogUtility::LogUtility()
-    : head(0), logCount(0), server(80), serverStarted(false), logTimestamp(true) {
+    : server(80), logTimestamp(true) {
 }
 
-void LogUtility::startLogServer() {
-    if (!serverStarted) {
-        // Get time frim internet
-        configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+void LogUtility::setup() {
+    // Get time frim internet
+    configTime(0, 0, "pool.ntp.org", "time.nist.gov");
 
-        // Define the web server routes
-        server.on("/", [this]() {
-            server.send(200, "text/html", "<h1>ESP32 Logs</h1><pre>" + getLogs() + "</pre>");
-        });
-
-        server.begin(); // Start the server
-        serverStarted = true; // Mark the server as started
+    if (ENABLE_LOG_SERVER) {
+        startLogServer();
     }
 }
 
+void LogUtility::startLogServer() {
+    // Define the web server routes
+    server.on("/", [this]() {
+        server.send(200, "text/html", "<h1>StormerESP32 Logs</h1><pre>" + getLogs() + "</pre>");
+    });
+
+    server.begin(); // Start the server
+}
+
 void LogUtility::handle() {
-    if (serverStarted) {
-        server.handleClient(); // Handle incoming clients if the server has started
+    if (ENABLE_LOG_SERVER) {
+        server.handleClient(); // Handle incoming clients if the server is enabled
     }
 }
 
 void LogUtility::logln(const String& message) {
-    String finalMessage = getCurrentTime() + message;
-    logs[head] = finalMessage + "\n";
+    String timestampedMessage = getCurrentTime() + message;
+    String finalMessage = timestampedMessage + "logDeque.size(): " + logDeque.size() + "\n";
 
-    head = (head + 1) % MAX_LOG_ENTRIES;
-    if (logCount < MAX_LOG_ENTRIES) {
-        logCount++; // Increase log count until max is reached
+    logDeque.push_front(finalMessage);
+    if (logDeque.size() > MAX_LOG_ENTRIES) {
+        logDeque.pop_back();
     }
 
-    Serial.println(finalMessage);
+    Serial.println(timestampedMessage);
     logTimestamp = true;
 }
 
 void LogUtility::log(const String& message) {
-    String finalMessage = getCurrentTime() + message;
-    logs[head] = finalMessage;
-    
-    head = (head + 1) % MAX_LOG_ENTRIES;
-    if (logCount < MAX_LOG_ENTRIES) {
-        logCount++; // Increase log count until max is reached
+    String timestampedMessage = getCurrentTime() + message;
+    String finalMessage = timestampedMessage;
+
+    if (logDeque.empty()) {
+        logDeque.push_front(finalMessage);
+    } else {
+        String newLog = logDeque.front() += finalMessage;
+        logDeque.pop_front();
+        logDeque.push_front(newLog);
     }
 
-    Serial.print(finalMessage);
+    Serial.print(timestampedMessage);
     logTimestamp = false;
 }
 
@@ -59,7 +65,7 @@ String LogUtility::getCurrentTime() {
     
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
-        return "N/A"; // Return if time cannot be obtained
+        return "N/A   "; // Return if time cannot be obtained
     }
     
     // Format the time as HH:MM:SS
@@ -71,10 +77,8 @@ String LogUtility::getCurrentTime() {
 
 String LogUtility::getLogs() {
     String allLogs = "";
-    for (int i = 0; i < logCount; i++) {
-        // Calculate the index in the circular buffer
-        int index = (head - logCount + i + MAX_LOG_ENTRIES) % MAX_LOG_ENTRIES;
-        allLogs += logs[index];
+    for (int i = logDeque.size() - 1; i >= 0; i--) {
+        allLogs += logDeque[i];
     }
     return allLogs; // Return all logs as a single string
 }
