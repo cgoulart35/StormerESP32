@@ -2,7 +2,7 @@
 #include <time.h>
 
 LogUtility::LogUtility()
-    : server(80), logTimestamp(true) {
+    : server(80), logTimestampOnNext(true) {
 }
 
 void LogUtility::setup() {
@@ -30,36 +30,37 @@ void LogUtility::handle() {
 }
 
 void LogUtility::logln(const String& message) {
-    String timestampedMessage = getCurrentTime() + message;
-    String finalMessage = timestampedMessage + "logDeque.size(): " + logDeque.size() + "\n";
+    String potentialTimestampMsg = getCurrentTime() + message;
+    String finalMessage = potentialTimestampMsg + "\n";
 
-    logDeque.push_front(finalMessage);
-    if (logDeque.size() > MAX_LOG_ENTRIES) {
-        logDeque.pop_back();
-    }
-
-    Serial.println(timestampedMessage);
-    logTimestamp = true;
+    addLogToStack(finalMessage);
+    Serial.println(potentialTimestampMsg);
+    logTimestampOnNext = true;
 }
 
 void LogUtility::log(const String& message) {
-    String timestampedMessage = getCurrentTime() + message;
-    String finalMessage = timestampedMessage;
+    String potentialTimestampMsg = getCurrentTime() + message;
 
-    if (logDeque.empty()) {
-        logDeque.push_front(finalMessage);
+    addLogToStack(potentialTimestampMsg);
+    Serial.print(potentialTimestampMsg);
+    logTimestampOnNext = false;
+}
+
+void LogUtility::addLogToStack(const String& message) {
+    if (logTimestampOnNext) {
+        logDeque.push_front(message);
+        if (logDeque.size() > MAX_LOG_ENTRIES) {
+            logDeque.pop_back();
+        }
     } else {
-        String newLog = logDeque.front() += finalMessage;
+        String newLog = logDeque.front() += message;
         logDeque.pop_front();
         logDeque.push_front(newLog);
     }
-
-    Serial.print(timestampedMessage);
-    logTimestamp = false;
 }
 
 String LogUtility::getCurrentTime() {
-    if (!logTimestamp) {
+    if (!logTimestampOnNext) {
         return "";
     }
     

@@ -7,7 +7,7 @@
 class LogUtility {
 private:
     WebServer server;
-    bool logTimestamp;
+    bool logTimestampOnNext;
     std::deque<String> logDeque;
 
 public:
@@ -17,6 +17,7 @@ public:
     void handle(); // To be called in loop()
     void logln(const String& message);
     void log(const String& message);
+    void addLogToStack(const String& message);
     String getCurrentTime();
     String getLogs();
 };
