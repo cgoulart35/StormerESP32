@@ -29,8 +29,24 @@ void LogUtility::handle() {
     }
 }
 
-void LogUtility::logln(const String& message) {
-    String potentialTimestampMsg = getCurrentTime() + message;
+void LogUtility::loglnInfo(const String& message) {
+    logln("[INFO]   ", message);
+}
+
+void LogUtility::logInfo(const String& message) {
+    log("[INFO]   ", message);
+}
+
+void LogUtility::loglnError(const String& message) {
+    logln("[ERROR]   ", message);
+}
+
+void LogUtility::logError(const String& message) {
+    log("[ERROR]   ", message);
+}
+
+void LogUtility::logln(const String& level, const String& message) {
+    String potentialTimestampMsg = getCurrentTime() + getLevel(level) + message;
     String finalMessage = potentialTimestampMsg + "\n";
 
     addLogToStack(finalMessage);
@@ -38,8 +54,8 @@ void LogUtility::logln(const String& message) {
     logTimestampOnNext = true;
 }
 
-void LogUtility::log(const String& message) {
-    String potentialTimestampMsg = getCurrentTime() + message;
+void LogUtility::log(const String& level, const String& message) {
+    String potentialTimestampMsg = getCurrentTime() + getLevel(level) + message;
 
     addLogToStack(potentialTimestampMsg);
     Serial.print(potentialTimestampMsg);
@@ -56,6 +72,14 @@ void LogUtility::addLogToStack(const String& message) {
         String newLog = logDeque.front() += message;
         logDeque.pop_front();
         logDeque.push_front(newLog);
+    }
+}
+
+String LogUtility::getLevel(const String& level) {
+    if (!logTimestampOnNext) {
+        return "";
+    } else {
+        return level;
     }
 }
 

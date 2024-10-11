@@ -46,13 +46,13 @@ void heartbeat() {
     unsigned long hours = minutes / 60;         // Convert minutes to hours
 
     // Print the heartbeat message
-    logUtility.log("Heartbeat (loop running) | Uptime: ");
-    logUtility.log(String(hours));
-    logUtility.log("h, ");
-    logUtility.log(String(minutes % 60));
-    logUtility.log("m, ");
-    logUtility.log(String(seconds % 60));
-    logUtility.logln("s");
+    logUtility.logInfo("Heartbeat (loop running) | Uptime: ");
+    logUtility.logInfo(String(hours));
+    logUtility.logInfo("h, ");
+    logUtility.logInfo(String(minutes % 60));
+    logUtility.logInfo("m, ");
+    logUtility.logInfo(String(seconds % 60));
+    logUtility.loglnInfo("s");
 
     // Wait for 1 second
     delay(1000);
