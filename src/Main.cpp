@@ -12,7 +12,7 @@ void heartbeat();
 
 void setup() {
     // Wait to start for 10 seconds
-    delay(10000);
+    delay(5000);
     Serial.begin(115200);
 
     // Connect to Wi-Fi
@@ -48,11 +48,11 @@ void heartbeat() {
     // Print the heartbeat message
     logUtility.log("Heartbeat (loop running) | Uptime: ");
     logUtility.log(String(hours));
-    logUtility.log(" hours, ");
+    logUtility.log("h, ");
     logUtility.log(String(minutes % 60));
-    logUtility.log(" minutes, ");
+    logUtility.log("m, ");
     logUtility.log(String(seconds % 60));
-    logUtility.logln(" seconds");
+    logUtility.logln("s");
 
     // Wait for 1 second
     delay(1000);
