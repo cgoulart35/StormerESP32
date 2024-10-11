@@ -9,6 +9,7 @@ public:
     OTAUpdater(LogUtility& logUtility);
     void setupOTA();
     void handleOTA();
+    
 private:
     LogUtility& logUtility;
 };

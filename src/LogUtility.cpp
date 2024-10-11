@@ -45,6 +45,25 @@ void LogUtility::logError(const String& message) {
     log("[ERROR]   ", message);
 }
 
+String LogUtility::getLogs() {
+    // Estimate total size of all logs
+    size_t totalSize = 0;
+    for (int i = logDeque.size() - 1; i >= 0; i--) {
+        totalSize += logDeque[i].length();
+    }
+
+    // Reserve the necessary space in one go
+    String allLogs;
+    allLogs.reserve(totalSize); // Preallocate memory
+
+    // Append all log entries in the deque
+    for (int i = logDeque.size() - 1; i >= 0; i--) {
+        allLogs += logDeque[i];
+    }
+
+    return allLogs;
+}
+
 void LogUtility::logln(const String& level, const String& message) {
     String potentialTimestampMsg = getCurrentTime() + getLevel(level) + message;
     String finalMessage = potentialTimestampMsg + "\n";
@@ -99,23 +118,3 @@ String LogUtility::getCurrentTime() {
     
     return String(timeString) + "   "; // Return formatted time as String
 }
-
-String LogUtility::getLogs() {
-    // Estimate total size of all logs
-    size_t totalSize = 0;
-    for (int i = logDeque.size() - 1; i >= 0; i--) {
-        totalSize += logDeque[i].length();
-    }
-
-    // Reserve the necessary space in one go
-    String allLogs;
-    allLogs.reserve(totalSize); // Preallocate memory
-
-    // Append all log entries in the deque
-    for (int i = logDeque.size() - 1; i >= 0; i--) {
-        allLogs += logDeque[i];
-    }
-
-    return allLogs;
-}
-

@@ -18,7 +18,7 @@ void setup() {
     // Connect to Wi-Fi
     wifiManager.connect();
 
-    // Start log server
+    // Setup log utility
     logUtility.setup();
 
     // Setup OTA
