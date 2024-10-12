@@ -14,6 +14,13 @@ private:
     LogUtility& logUtility;
     unsigned long previousMillis;
     boolean isDisconnected;
+    boolean ledConfigured;
+    boolean rgbSwitch;
+    boolean offineMode;
+
+    void setupLedPins();
+    void toggleLED();
+    void setRgbColor(boolean r, boolean g, boolean b);
 };
 
 #endif

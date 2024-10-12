@@ -12,6 +12,8 @@ public:
     
 private:
     LogUtility& logUtility;
+
+    void setupLedPins();
 };
 
 #endif

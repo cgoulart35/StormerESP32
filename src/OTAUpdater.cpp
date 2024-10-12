@@ -4,14 +4,19 @@ OTAUpdater::OTAUpdater(LogUtility& logUtility)
     : logUtility(logUtility) {}
 
 void OTAUpdater::setupOTA() {
+    setupLedPins();
+    digitalWrite(LED_BUILTIN, LOW);
+
     // Initialize OTA
     ArduinoOTA.onStart([this]() {
         String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
         logUtility.loglnInfo("Start updating " + type);
+        digitalWrite(LED_BUILTIN, HIGH);
     });
 
     ArduinoOTA.onEnd([this]() {
         logUtility.loglnInfo("\nEnd OTA");
+        digitalWrite(LED_BUILTIN, LOW);
     });
 
     ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {
@@ -39,4 +44,9 @@ void OTAUpdater::setupOTA() {
 void OTAUpdater::handleOTA() {
     // Handle OTA updates
     ArduinoOTA.handle();
+}
+
+void OTAUpdater::setupLedPins() {
+    // Set the LED pin as output
+    pinMode(LED_BUILTIN, OUTPUT);
 }

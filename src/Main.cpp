@@ -11,8 +11,7 @@ OTAUpdater otaUpdater(logUtility);
 void heartbeat();
 
 void setup() {
-    // Wait to start for 10 seconds
-    delay(5000);
+    // Start serial
     Serial.begin(115200);
 
     // Connect to Wi-Fi
