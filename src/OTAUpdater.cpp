@@ -15,11 +15,11 @@ void OTAUpdater::setupOTA() {
     });
 
     ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {
-        logUtility.loglnInfo(String("Progress: %u%%\r", (progress / (total / 100))));
+        logUtility.loglnInfo("Progress: " + String((progress * 100) / total) + "%");
     });
 
     ArduinoOTA.onError([this](ota_error_t error) {
-        Serial.printf("Error[%u]: ", error);
+        logUtility.loglnError("Error[" + String(error) + "]: ");
         if (error == OTA_AUTH_ERROR) {
             logUtility.loglnError("Auth Failed");
         } else if (error == OTA_BEGIN_ERROR) {
