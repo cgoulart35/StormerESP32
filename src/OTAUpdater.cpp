@@ -3,7 +3,7 @@
 OTAUpdater::OTAUpdater(LogUtility& logUtility)
     : logUtility(logUtility) {}
 
-void OTAUpdater::setupOTA() {
+void OTAUpdater::setup() {
     setupLedPins();
     digitalWrite(LED_BUILTIN, LOW);
 
@@ -41,7 +41,7 @@ void OTAUpdater::setupOTA() {
     ArduinoOTA.begin();
 }
 
-void OTAUpdater::handleOTA() {
+void OTAUpdater::handle() {
     // Handle OTA updates
     ArduinoOTA.handle();
 }

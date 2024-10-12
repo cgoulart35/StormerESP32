@@ -21,7 +21,7 @@ void setup() {
     logUtility.setup();
 
     // Setup OTA
-    otaUpdater.setupOTA();
+    otaUpdater.setup();
 }
 
 void loop() {
@@ -32,7 +32,7 @@ void loop() {
     logUtility.handle();
 
     // Handle OTA updates
-    otaUpdater.handleOTA();
+    otaUpdater.handle();
 
     // Heartbeat
     heartbeat();

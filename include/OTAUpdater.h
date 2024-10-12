@@ -7,8 +7,8 @@
 class OTAUpdater {
 public:
     OTAUpdater(LogUtility& logUtility);
-    void setupOTA();
-    void handleOTA();
+    void setup();
+    void handle();
     
 private:
     LogUtility& logUtility;
