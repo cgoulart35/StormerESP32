@@ -2,6 +2,7 @@
 #define LOG_UTILITY_H
 
 #include <WebServer.h>
+#include <time.h>
 #include <deque>
 
 class LogUtility {

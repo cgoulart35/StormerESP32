@@ -1,5 +1,4 @@
 #include "LogUtility.h"
-#include <time.h>
 
 LogUtility::LogUtility()
     : server(80), logTimestampOnNext(true) {
