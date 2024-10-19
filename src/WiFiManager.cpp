@@ -2,7 +2,7 @@
 
 WiFiManager::WiFiManager(LogUtility& logUtility)
     : logUtility(logUtility), previousMillis(0), isDisconnected(true),
-    ledConfigured(false),rgbSwitch(false), offineMode(true) {}
+    ledConfigured(false), rgbSwitch(false), offineMode(true) {}
 
 void WiFiManager::connect() {
     if (!ledConfigured) {
@@ -46,12 +46,14 @@ void WiFiManager::handle() {
 
     // If reconection failed, but connected before next reattempt
     } else if (isDisconnected && WiFi.status() == WL_CONNECTED) {
-        logUtility.logInfo("Wi-Fi connected! ");
-        logUtility.logInfo("IP address: ");
-        logUtility.loglnInfo(WiFi.localIP().toString());
+        logUtility.loglnInfo("Wi-Fi connected! IP address: " + WiFi.localIP().toString());
         isDisconnected = false;
-        offineMode = false;
         setRgbColor(0, 1, 0);
+        
+        if (offineMode) {
+            configTime(0, 0, "pool.ntp.org", "time.nist.gov"); // Get time from internet
+            offineMode = false;
+        }
     }
 }
 

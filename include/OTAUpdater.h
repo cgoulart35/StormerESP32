@@ -1,5 +1,5 @@
-#ifndef OTAUPDATER_H
-#define OTAUPDATER_H
+#ifndef OTA_UPDATER_H
+#define OTA_UPDATER_H
 
 #include <ArduinoOTA.h>
 #include <LogUtility.h>

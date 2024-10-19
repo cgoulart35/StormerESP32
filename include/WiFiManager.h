@@ -1,5 +1,5 @@
-#ifndef WIFIMANAGER_H
-#define WIFIMANAGER_H
+#ifndef WIFI_MANAGER_H
+#define WIFI_MANAGER_H
 
 #include <WiFi.h>
 #include <LogUtility.h>
@@ -19,7 +19,6 @@ private:
     boolean offineMode;
 
     void setupLedPins();
-    void toggleLED();
     void setRgbColor(boolean r, boolean g, boolean b);
 };
 
