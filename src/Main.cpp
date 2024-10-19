@@ -22,7 +22,7 @@ void heartbeatTask(void *pvParameters) {
         unsigned long hours = minutes / 60;         // Convert minutes to hours
         
         // Print the heartbeat message
-        logUtility.loglnInfo("Heartbeat (loop running) | Uptime: " + String(hours) + "h, " + String(minutes % 6) + "m, " + String(seconds % 60) + "s");
+        logUtility.loglnInfo("Heartbeat (loop running) | Uptime: " + String(hours) + "h, " + String(minutes % 60) + "m, " + String(seconds % 60) + "s");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
