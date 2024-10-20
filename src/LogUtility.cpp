@@ -1,18 +1,27 @@
 #include "LogUtility.h"
 
 LogUtility::LogUtility() {
+    uuid.setVariant4Mode();
     logMutex = xSemaphoreCreateMutex();
 }
 
 void LogUtility::loglnInfo(const String& message) {
-    logln("   [INFO]   ", message);
+    logln("INFO", "", message);
 }
 
 void LogUtility::loglnError(const String& message) {
-    logln("   [ERROR]   ", message);
+    logln("ERROR", "", message);
 }
 
-String LogUtility::getLogs() {
+void LogUtility::loglnInfoTransactionID(const String& transactionUUID, const String& message) {
+    logln("INFO", transactionUUID, message);
+}
+
+void LogUtility::loglnErrorTransactionID(const String& transactionUUID, const String& message) {
+    logln("ERROR", transactionUUID, message);
+}
+
+String LogUtility::getLogsHTML() {
     String allLogs;
     if (xSemaphoreTake(logMutex, portMAX_DELAY)) {
         // Estimate total size of all logs
@@ -26,7 +35,7 @@ String LogUtility::getLogs() {
 
         // Append all log entries in the deque
         for (int i = logDeque.size() - 1; i >= 0; i--) {
-            allLogs += logDeque[i];
+            allLogs += "<div class='log-entry' data-original='" + logDeque[i] + "' onclick='togglePretty(this)'>" + logDeque[i] + "</div>";
         }
         xSemaphoreGive(logMutex);
     }
@@ -37,7 +46,7 @@ String LogUtility::getLogs() {
 String LogUtility::getCurrentTime() {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
-        return "N/A   "; // Return if time cannot be obtained
+        return "N/A"; // Return if time cannot be obtained
     }
 
     // Format the time as HH:MM:SS
@@ -47,11 +56,25 @@ String LogUtility::getCurrentTime() {
     return String(timeString); // Return formatted time as String
 }
 
-void LogUtility::logln(const String& level, const String& message) {
-    String potentialTimestampMsg = getCurrentTime() + level + message;
-    String finalMessage = potentialTimestampMsg + "\n";
-    addLogToStack(finalMessage);
-    Serial.println(potentialTimestampMsg);
+String LogUtility::generateTransactionUUID() {
+    uuid.generate();
+    return uuid.toCharArray();
+}
+
+void LogUtility::logln(const String& level, const String& transactionUUID, const String& message) {
+    JsonDocument doc;
+    doc["time"] = getCurrentTime();
+    doc["level"] = level;
+    if (transactionUUID != "") {
+        doc["transactionUUID"] = transactionUUID;
+    }
+    doc["message"] = message;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
+    addLogToStack(jsonString);
+    Serial.println(jsonString);
 }
 
 void LogUtility::addLogToStack(const String& message) {

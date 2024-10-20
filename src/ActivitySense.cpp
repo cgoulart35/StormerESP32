@@ -7,8 +7,8 @@
 #define SOUND_SPEED 0.034
 #define CM_TO_INCH 0.393701
 
-ActivitySense::ActivitySense(LogUtility& logUtility)
-    : logUtility(logUtility), notifyRun(logUtility, NOTIFY_RUN_CHANNEL_ACTIVITY_SENSE) {
+ActivitySense::ActivitySense(LogUtility& logUtility, NotifyRun& notifyRun)
+    : logUtility(logUtility), notifyRun(notifyRun) {
         duration = 0;
         distance = 0.0;
     }
@@ -20,7 +20,7 @@ void ActivitySense::setup() {
 }
 
 void ActivitySense::handle() {
-    // clears the trigPin
+    // clears the TRIG pin
     digitalWrite(TRIG_PIN, LOW);
     delayMicroseconds(2);
 
@@ -54,16 +54,14 @@ void ActivitySense::simpleBuzzerToggle() {
     if (distance < DISTANCE_THRESHOLD_INCHES) {
         if (!buzzerState) {
             String time = logUtility.getCurrentTime();
-            logUtility.loglnInfo("Buzzer activated: Distance below threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance);
-            notifyRun.publish("Buzzer activated at " + time);
+            String transactionUUID = logUtility.generateTransactionUUID();
+            logUtility.loglnInfoTransactionID(transactionUUID, "Buzzer activated: Distance below threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance);
+            notifyRun.publish(transactionUUID, NOTIFY_RUN_CHANNEL_ACTIVITY_SENSE, "Buzzer activated at " + time);
         }
         digitalWrite(BUZZER_PIN, HIGH);
         buzzerState = true;
     // turn off buzzer
     } else {
-        if (buzzerState) {
-            logUtility.loglnInfo("Buzzer deactivated: Distance above threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance);
-        }
         digitalWrite(BUZZER_PIN, LOW);
         buzzerState = false;
     }

@@ -6,13 +6,13 @@
 
 class ActivitySense {
 public:
-    ActivitySense(LogUtility& logUtility);
+    ActivitySense(LogUtility& logUtility, NotifyRun& notifyRun);
     void setup();
     void handle();
     
 private:
     LogUtility& logUtility;
-    NotifyRun notifyRun;
+    NotifyRun& notifyRun;
     unsigned long duration;
     float distance;
     boolean buzzerState;

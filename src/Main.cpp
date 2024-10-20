@@ -1,15 +1,19 @@
 #include "LogUtility.h"
+#include "HTTPClientTaskSafe.h"
+#include "NotifyRun.h"
 #include "WiFiManager.h"
 #include "LogServer.h"
 #include "OTAUpdater.h"
-#include "NotifyRun.h"
 #include "ActivitySense.h"
 
 LogUtility logUtility;
+HTTPClientTaskSafe httpClientTaskSafe(logUtility);
+NotifyRun notifyRun(logUtility, httpClientTaskSafe);
+
 WiFiManager wifiManager(logUtility);
 LogServer logServer(logUtility);
 OTAUpdater otaUpdater(logUtility);
-ActivitySense activitySense(logUtility);
+ActivitySense activitySense(logUtility, notifyRun);
 
 TaskHandle_t heartbeatTaskHandle = NULL;
 TaskHandle_t wifiManagerTaskHandle = NULL;
@@ -77,12 +81,12 @@ void setup() {
     // Create tasks
     if (ENABLE_HEARTBEAT_LOG)
         xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, 1, &heartbeatTaskHandle, 0);
-    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 4, &wifiManagerTaskHandle, 0);
+    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 6, &wifiManagerTaskHandle, 0);
     if (ENABLE_LOG_SERVER)
-        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 2, &logServerTaskHandle, 0);
-    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 3, &otaTaskHandle, 0);
+        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 3, &logServerTaskHandle, 0);
+    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 5, &otaTaskHandle, 0);
     if (ENABLE_ACTIVITY_SENSE)
-        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 5, &activitySenseTaskHandle, 0);
+        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 4, &activitySenseTaskHandle, 0);
 }
 
 void loop() {}
