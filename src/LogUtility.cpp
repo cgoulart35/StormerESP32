@@ -5,11 +5,11 @@ LogUtility::LogUtility() {
 }
 
 void LogUtility::loglnInfo(const String& message) {
-    logln("[INFO]   ", message);
+    logln("   [INFO]   ", message);
 }
 
 void LogUtility::loglnError(const String& message) {
-    logln("[ERROR]   ", message);
+    logln("   [ERROR]   ", message);
 }
 
 String LogUtility::getLogs() {
@@ -39,12 +39,12 @@ String LogUtility::getCurrentTime() {
     if (!getLocalTime(&timeinfo)) {
         return "N/A   "; // Return if time cannot be obtained
     }
-    
+
     // Format the time as HH:MM:SS
     char timeString[20];
-    strftime(timeString, sizeof(timeString), "%H:%M:%S", &timeinfo);
+    strftime(timeString, sizeof(timeString), "%I:%M:%S %p %Z", &timeinfo);
     
-    return String(timeString) + "   "; // Return formatted time as String
+    return String(timeString); // Return formatted time as String
 }
 
 void LogUtility::logln(const String& level, const String& message) {

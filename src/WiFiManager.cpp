@@ -51,7 +51,7 @@ void WiFiManager::handle() {
         setRgbColor(0, 1, 0);
         
         if (offineMode) {
-            configTime(0, 0, "pool.ntp.org", "time.nist.gov"); // Get time from internet
+            configTzTime(TIMEZONE, "pool.ntp.org", "time.nist.gov"); // Automatically adjusts for DST
             offineMode = false;
         }
     }
