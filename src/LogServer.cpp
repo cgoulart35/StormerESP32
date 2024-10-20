@@ -14,4 +14,5 @@ void LogServer::setup() {
 
 void LogServer::handle() {
     server.handleClient(); // Handle incoming clients if the server is enabled
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 }

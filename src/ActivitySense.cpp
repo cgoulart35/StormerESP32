@@ -17,21 +17,35 @@ void ActivitySense::setup() {
 }
 
 void ActivitySense::handle() {
-    // generate 10-microsecond pulse to TRIG pin
-    digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIG_PIN, LOW);
+    float totalDistance = 0;
+    int validSamples = 0;
 
-    // measure duration of pulse from ECHO pin
-    duration_us = pulseIn(ECHO_PIN, HIGH);
+    for (int i = 0; i < 10; i++) {
+        // generate 10-microsecond pulse to TRIG pin
+        digitalWrite(TRIG_PIN, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(TRIG_PIN, LOW);
 
-    // check if the pulse duration is valid
-    if (duration_us > 0) {
-        // calculate the distance in centimeters and convert to inches
-        distance_in = (0.017 * duration_us) / 2.54;        
+        // measure duration of pulse from ECHO pin
+        duration_us = pulseIn(ECHO_PIN, HIGH);
+
+        // if the pulse duration is valid, calculate the distance
+        if (duration_us > 0) {
+            // calculate the distance in centimeters and convert to inches
+            float distance_in = (0.017 * duration_us) / 2.54;
+            totalDistance += distance_in;
+            validSamples++;
+        }
+
+        // small delay between samples to avoid rapid firing
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+
+    // calculate the average distance if we have valid readings
+    if (validSamples > 0) {
+        distance_in = totalDistance / validSamples;
     } else {
-        // If no echo received, set distance to a high value to avoid triggering the buzzer
-        distance_in = DISTANCE_THRESHOLD_INCHES + 1;
+        distance_in = DISTANCE_THRESHOLD_INCHES + 1;  // set to max to avoid false trigger
     }
 
     simpleBuzzerToggle();

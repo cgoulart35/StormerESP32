@@ -48,4 +48,5 @@ void OTAUpdater::setup() {
 void OTAUpdater::handle() {
     // Handle OTA updates
     ArduinoOTA.handle();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 }

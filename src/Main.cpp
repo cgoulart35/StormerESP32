@@ -37,7 +37,6 @@ void wifiManagerTask(void *pvParameters) {
     while (true) {
         // Handle WiFi reconnections
         wifiManager.handle();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
@@ -48,7 +47,6 @@ void logServerTask(void *pvParameters) {
     while (true) {
         // Handle log server
         logServer.handle();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
@@ -59,7 +57,6 @@ void otaUpdaterTask(void *pvParameters) {
     while (true) {
         // Handle OTA updates
         otaUpdater.handle();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
@@ -70,7 +67,6 @@ void activitySenseTask(void *pvParameters) {
     while (true) {
         // Handle activity
         activitySense.handle();
-        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 
