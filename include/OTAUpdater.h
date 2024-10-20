@@ -12,8 +12,7 @@ public:
     
 private:
     LogUtility& logUtility;
-
-    void setupLedPins();
+    unsigned int lastProgress;
 };
 
 #endif

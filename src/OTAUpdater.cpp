@@ -1,11 +1,11 @@
 #include "OTAUpdater.h"
 
 OTAUpdater::OTAUpdater(LogUtility& logUtility)
-    : logUtility(logUtility) {}
+    : logUtility(logUtility), lastProgress(100) {}
 
 void OTAUpdater::setup() {
-    setupLedPins();
-    digitalWrite(LED_BUILTIN, LOW);
+    // Set the LED pin as output
+    pinMode(LED_BUILTIN, OUTPUT);
 
     // Initialize OTA
     ArduinoOTA.onStart([this]() {
@@ -20,7 +20,10 @@ void OTAUpdater::setup() {
     });
 
     ArduinoOTA.onProgress([this](unsigned int progress, unsigned int total) {
-        logUtility.loglnInfo("Progress: " + String((progress * 100) / total) + "%");
+        unsigned int currentProgress = (progress * 100) / total;
+        if (lastProgress != currentProgress)
+            logUtility.loglnInfo("Progress: " + String(currentProgress) + "%");
+        lastProgress = currentProgress;
     });
 
     ArduinoOTA.onError([this](ota_error_t error) {
@@ -36,6 +39,7 @@ void OTAUpdater::setup() {
         } else if (error == OTA_END_ERROR) {
             logUtility.loglnError("End Failed");
         }
+        digitalWrite(LED_BUILTIN, LOW);
     });
 
     ArduinoOTA.begin();
@@ -44,9 +48,4 @@ void OTAUpdater::setup() {
 void OTAUpdater::handle() {
     // Handle OTA updates
     ArduinoOTA.handle();
-}
-
-void OTAUpdater::setupLedPins() {
-    // Set the LED pin as output
-    pinMode(LED_BUILTIN, OUTPUT);
 }

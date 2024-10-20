@@ -34,6 +34,19 @@ String LogUtility::getLogs() {
     return allLogs;
 }
 
+String LogUtility::getCurrentTime() {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        return "N/A   "; // Return if time cannot be obtained
+    }
+    
+    // Format the time as HH:MM:SS
+    char timeString[20];
+    strftime(timeString, sizeof(timeString), "%H:%M:%S", &timeinfo);
+    
+    return String(timeString) + "   "; // Return formatted time as String
+}
+
 void LogUtility::logln(const String& level, const String& message) {
     String potentialTimestampMsg = getCurrentTime() + level + message;
     String finalMessage = potentialTimestampMsg + "\n";
@@ -49,17 +62,4 @@ void LogUtility::addLogToStack(const String& message) {
         }
         xSemaphoreGive(logMutex);
     }
-}
-
-String LogUtility::getCurrentTime() {
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) {
-        return "N/A   "; // Return if time cannot be obtained
-    }
-    
-    // Format the time as HH:MM:SS
-    char timeString[20];
-    strftime(timeString, sizeof(timeString), "%H:%M:%S", &timeinfo);
-    
-    return String(timeString) + "   "; // Return formatted time as String
 }

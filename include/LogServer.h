@@ -13,8 +13,6 @@ public:
 private:
     LogUtility& logUtility;
     WebServer server;
-
-    void startLogServer();
 };
 
 #endif

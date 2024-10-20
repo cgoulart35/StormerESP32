@@ -3,16 +3,19 @@
 #include "LogServer.h"
 #include "OTAUpdater.h"
 #include "NotifyRun.h"
+#include "ActivitySense.h"
 
 LogUtility logUtility;
 WiFiManager wifiManager(logUtility);
 LogServer logServer(logUtility);
 OTAUpdater otaUpdater(logUtility);
+ActivitySense activitySense(logUtility);
 
 TaskHandle_t heartbeatTaskHandle = NULL;
 TaskHandle_t wifiManagerTaskHandle = NULL;
 TaskHandle_t logServerTaskHandle = NULL;
 TaskHandle_t otaTaskHandle = NULL;
+TaskHandle_t activitySenseTaskHandle = NULL;
 
 void heartbeatTask(void *pvParameters) {
     while (true) {
@@ -60,15 +63,30 @@ void otaUpdaterTask(void *pvParameters) {
     }
 }
 
+void activitySenseTask(void *pvParameters) {
+    // Setup activity sense
+    activitySense.setup();
+
+    while (true) {
+        // Handle activity
+        activitySense.handle();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
 void setup() {
     // Start serial
     Serial.begin(115200);
 
     // Create tasks
-    xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, 4, &heartbeatTaskHandle, 0);
-    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 3, &wifiManagerTaskHandle, 0);
-    xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 2, &logServerTaskHandle, 0);
-    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 1, &otaTaskHandle, 0);
+    if (ENABLE_HEARTBEAT_LOG)
+        xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, 1, &heartbeatTaskHandle, 0);
+    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 5, &wifiManagerTaskHandle, 0);
+    if (ENABLE_LOG_SERVER)
+        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 3, &logServerTaskHandle, 0);
+    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 2, &otaTaskHandle, 0);
+    if (ENABLE_ACTIVITY_SENSE)
+        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 4, &activitySenseTaskHandle, 0);
 }
 
 void loop() {}
