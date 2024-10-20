@@ -4,10 +4,13 @@
 #define ECHO_PIN   1
 #define BUZZER_PIN 2
 
+#define SOUND_SPEED 0.034
+#define CM_TO_INCH 0.393701
+
 ActivitySense::ActivitySense(LogUtility& logUtility)
     : logUtility(logUtility), notifyRun(logUtility, NOTIFY_RUN_CHANNEL_ACTIVITY_SENSE) {
-        duration_us = 0;
-        distance_in = 0.0;
+        duration = 0;
+        distance = 0.0;
     }
 
 void ActivitySense::setup() {
@@ -17,47 +20,41 @@ void ActivitySense::setup() {
 }
 
 void ActivitySense::handle() {
-    float totalDistance = 0;
-    int validSamples = 0;
+    // clears the trigPin
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
 
-    for (int i = 0; i < 10; i++) {
-        // generate 10-microsecond pulse to TRIG pin
-        digitalWrite(TRIG_PIN, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(TRIG_PIN, LOW);
+    // generate 10-microsecond pulse to TRIG pin
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    
+    // measure duration of pulse from ECHO pin
+    duration = pulseIn(ECHO_PIN, HIGH);
 
-        // measure duration of pulse from ECHO pin
-        duration_us = pulseIn(ECHO_PIN, HIGH);
-
-        // if the pulse duration is valid, calculate the distance
-        if (duration_us > 0) {
-            // calculate the distance in centimeters and convert to inches
-            float distance_in = (0.017 * duration_us) / 2.54;
-            totalDistance += distance_in;
-            validSamples++;
-        }
-
-        // small delay between samples to avoid rapid firing
-        vTaskDelay(1 / portTICK_PERIOD_MS);
-    }
-
-    // calculate the average distance if we have valid readings
-    if (validSamples > 0) {
-        distance_in = totalDistance / validSamples;
+    // if the pulse duration is valid, calculate the distance
+    if (duration > 0) {
+        // calculate the distance in cm
+        distance = duration * SOUND_SPEED/2;
+        // convert to inches
+        distance = distance * CM_TO_INCH;
     } else {
-        distance_in = DISTANCE_THRESHOLD_INCHES + 1;  // set to max to avoid false trigger
+        // if no echo received, set distance to a high value to avoid triggering the buzzer
+        distance = DISTANCE_THRESHOLD_INCHES + 1;
     }
 
     simpleBuzzerToggle();
     //complexBuzzerSong();
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);
 }
 
 void ActivitySense::simpleBuzzerToggle() {
     // turn on buzzer
-    if (distance_in < DISTANCE_THRESHOLD_INCHES) {
+    if (distance < DISTANCE_THRESHOLD_INCHES) {
         if (!buzzerState) {
             String time = logUtility.getCurrentTime();
-            logUtility.loglnInfo("Buzzer activated: Distance below threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance_in);
+            logUtility.loglnInfo("Buzzer activated: Distance below threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance);
             notifyRun.publish("Buzzer activated at " + time);
         }
         digitalWrite(BUZZER_PIN, HIGH);
@@ -65,7 +62,7 @@ void ActivitySense::simpleBuzzerToggle() {
     // turn off buzzer
     } else {
         if (buzzerState) {
-            logUtility.loglnInfo("Buzzer deactivated: Distance above threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance_in);
+            logUtility.loglnInfo("Buzzer deactivated: Distance above threshold of " + String(DISTANCE_THRESHOLD_INCHES) + " inches - " + distance);
         }
         digitalWrite(BUZZER_PIN, LOW);
         buzzerState = false;

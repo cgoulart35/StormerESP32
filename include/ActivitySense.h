@@ -13,8 +13,8 @@ public:
 private:
     LogUtility& logUtility;
     NotifyRun notifyRun;
-    unsigned long duration_us;
-    float distance_in;
+    unsigned long duration;
+    float distance;
     boolean buzzerState;
 
     void simpleBuzzerToggle();
