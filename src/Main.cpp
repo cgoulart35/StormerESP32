@@ -79,10 +79,10 @@ void setup() {
         xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, 1, &heartbeatTaskHandle, 0);
     xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 5, &wifiManagerTaskHandle, 0);
     if (ENABLE_LOG_SERVER)
-        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 3, &logServerTaskHandle, 0);
-    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 2, &otaTaskHandle, 0);
+        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 2, &logServerTaskHandle, 0);
+    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 4, &otaTaskHandle, 0);
     if (ENABLE_ACTIVITY_SENSE)
-        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 4, &activitySenseTaskHandle, 0);
+        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 3, &activitySenseTaskHandle, 0);
 }
 
 void loop() {}

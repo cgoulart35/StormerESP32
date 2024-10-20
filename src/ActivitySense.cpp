@@ -38,7 +38,7 @@ void ActivitySense::handle() {
         }
 
         // small delay between samples to avoid rapid firing
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
     // calculate the average distance if we have valid readings
