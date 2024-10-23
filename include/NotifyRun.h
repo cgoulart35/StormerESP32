@@ -1,9 +1,6 @@
 #ifndef NOTIFY_RUN_H
 #define NOTIFY_RUN_H
 
-#include <Arduino.h>
-#include <HTTPClient.h>
-#include <LogUtility.h>
 #include "HTTPClientTaskSafe.h"
 
 class NotifyRun {
@@ -19,6 +16,7 @@ private:
         String message;
     };
 
+    TaskInfo taskInfo;
     LogUtility& logUtility;
     HTTPClientTaskSafe& httpClientTaskSafe;
 

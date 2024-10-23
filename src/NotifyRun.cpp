@@ -6,7 +6,7 @@ NotifyRun::NotifyRun(LogUtility& logUtility, HTTPClientTaskSafe& httpClientTaskS
 void NotifyRun::publish(const String& transactionUUID, const String& channelId, const String& message) {
     // create a new task for publishing the message
     TaskParams* params = new TaskParams{this, transactionUUID, channelId, message};
-    xTaskCreatePinnedToCore(notifyRunTask, "Notify Run Task", 4096, params, 2, NULL, 0);
+    xTaskCreatePinnedToCore(notifyRunTask, "Notify Run Task", 4096, params, taskInfo.getPriority("Notify Run Task"), NULL, taskInfo.getCore("Notify Run Task"));
 }
 
 void NotifyRun::notifyRunTask(void *pvParameters) {

@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <HTTPClient.h>
+#include "TaskInfo.h"
 #include <LogUtility.h>
 
 class HTTPClientTaskSafe {
@@ -18,6 +19,7 @@ private:
         String message;
     };
 
+    TaskInfo taskInfo;
     LogUtility& logUtility;
     SemaphoreHandle_t httpMutex;
 

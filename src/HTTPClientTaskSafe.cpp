@@ -8,7 +8,7 @@ HTTPClientTaskSafe::HTTPClientTaskSafe(LogUtility& logUtility)
 void HTTPClientTaskSafe::sendPost(const String& transactionUUID, const String& url, const String& message) {
     // create a new task for publishing the message
     TaskParams* params = new TaskParams{this, transactionUUID, url, message};
-    xTaskCreatePinnedToCore(sendPostTask, "Send Post Task", 4096, params, 2, NULL, 0);
+    xTaskCreatePinnedToCore(sendPostTask, "Send Post Task", 4096, params, taskInfo.getPriority("Send Post Task"), NULL, taskInfo.getCore("Send Post Task"));
 }
 
 void HTTPClientTaskSafe::sendPostTask(void *pvParameters) {

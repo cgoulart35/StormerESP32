@@ -32,7 +32,7 @@ void WiFiManager::handle() {
             }
             rgbSwitch = true;
         }
-        
+
     }
 
     // Check Wi-Fi connection and reconnect if necessary
@@ -44,7 +44,7 @@ void WiFiManager::handle() {
         previousMillis = currentMillis;
         connect(); 
 
-    // If reconection failed, but connected before next reattempt
+    // If reconnected
     } else if (isDisconnected && WiFi.status() == WL_CONNECTED) {
         logUtility.loglnInfo("Wi-Fi connected! IP address: " + WiFi.localIP().toString());
         isDisconnected = false;

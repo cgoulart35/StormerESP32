@@ -1,3 +1,4 @@
+#include "TaskInfo.h"
 #include "LogUtility.h"
 #include "HTTPClientTaskSafe.h"
 #include "NotifyRun.h"
@@ -15,6 +16,7 @@ LogServer logServer(logUtility);
 OTAUpdater otaUpdater(logUtility);
 ActivitySense activitySense(logUtility, notifyRun);
 
+TaskInfo taskInfo;
 TaskHandle_t heartbeatTaskHandle = NULL;
 TaskHandle_t wifiManagerTaskHandle = NULL;
 TaskHandle_t logServerTaskHandle = NULL;
@@ -80,13 +82,13 @@ void setup() {
 
     // Create tasks
     if (ENABLE_HEARTBEAT_LOG)
-        xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, 1, &heartbeatTaskHandle, 0);
-    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, 6, &wifiManagerTaskHandle, 0);
+        xTaskCreatePinnedToCore(heartbeatTask, "Heartbeat Task", 4096, NULL, taskInfo.getPriority("Heartbeat Task"), &heartbeatTaskHandle, taskInfo.getCore("Heartbeat Task"));
+    xTaskCreatePinnedToCore(wifiManagerTask, "WiFi Connection Task", 4096, NULL, taskInfo.getPriority("WiFi Connection Task"), &wifiManagerTaskHandle, taskInfo.getCore("WiFi Connection Task"));
     if (ENABLE_LOG_SERVER)
-        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, 3, &logServerTaskHandle, 0);
-    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, 5, &otaTaskHandle, 0);
+        xTaskCreatePinnedToCore(logServerTask, "Log Server Task", 4096, NULL, taskInfo.getPriority("Log Server Task"), &logServerTaskHandle, taskInfo.getCore("Log Server Task"));
+    xTaskCreatePinnedToCore(otaUpdaterTask, "OTA Updater Task", 4096, NULL, taskInfo.getPriority("OTA Updater Task"), &otaTaskHandle, taskInfo.getCore("OTA Updater Task"));
     if (ENABLE_ACTIVITY_SENSE)
-        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, 4, &activitySenseTaskHandle, 0);
+        xTaskCreatePinnedToCore(activitySenseTask, "Activity Sense Task", 4096, NULL, taskInfo.getPriority("Activity Sense Task"), &activitySenseTaskHandle, taskInfo.getCore("Activity Sense Task"));
 }
 
 void loop() {}
